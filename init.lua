@@ -5,9 +5,11 @@ local angelic = {}
 
 -- documentation
 
----@alias vec2coord {[1]: number, [2]: number}
+---@alias prototypeCircle {[1]: number, [2]: number}
+---@alias prototypeCurve number[]
+---@alias prototypeLine {[1]: number, [2]: number, [3]: number, [4]: number}
 
----@alias CharacterTemplate {width: number, circles: vec2coord[], curves: vec2coord[][], lines: {[1]: vec2coord, [2]: vec2coord}[]}
+---@alias CharacterTemplate {width: number, circles: prototypeCircle[]?, curves: prototypeCurve[][]?, lines: prototypeLine[]?}
 ---@alias CharacterSet {circleMode: love.DrawMode, circleRadius: number, lineSize: number, characters: table<AngelicCharacter, CharacterTemplate>}
 
 -- consts
@@ -45,9 +47,16 @@ local AngelicCharacter = {
     RECT = "rectangle"
 }
 
+---@enum FontStyle
+local FontStyle = {
+    REPLICANT = "replicant",
+    AUTOMATA = "automata",
+    REINCARNATION = "rein"
+}
+
 ---@enum FontVariant
 local FontVariant = {
-    REPLICANT = {
+    [FontStyle.REPLICANT] = {
         ["a"] = AngelicCharacter.ALEPH,
         ["b"] = AngelicCharacter.BETH,
         ["c"] = AngelicCharacter.CHETH,
@@ -75,7 +84,7 @@ local FontVariant = {
         ["y"] = AngelicCharacter.JOD,
         ["z"] = AngelicCharacter.ZADE,
     },
-    AUTOMATA = {
+    [FontStyle.AUTOMATA] = {
         ["a"] = AngelicCharacter.ALEPH,
         ["b"] = AngelicCharacter.BETH,
         ["c"] = AngelicCharacter.CHETH,
@@ -103,7 +112,7 @@ local FontVariant = {
         ["y"] = AngelicCharacter.JOD,
         ["z"] = AngelicCharacter.ZADE,
     },
-    REINCARNATION = {
+    [FontStyle.REINCARNATION] = {
         ["a"] = AngelicCharacter.ALEPH,
         ["b"] = AngelicCharacter.BETH,
         ["c"] = AngelicCharacter.CHETH,
@@ -136,7 +145,13 @@ local FontVariant = {
 ---@type table<CharacterVariant, CharacterSet>
 local CharacterSets = {
     [CharacterVariant.AUTOMATA] = {
+        circleMode = "fill",
+        circleRadius = 0.11,
+        lineSize = 0.08,
 
+        characters = {
+            [AngelicCharacter.ALEPH] = { width = 1.05, circles = {{0.15, 0.12}, {0.15, 0.89}, {0.92, 0.12}, {0.92, 0.89}}, lines = {{0.24, 0.23, 0.81, 0.79}, {0.25, 0.78, 0.41, 0.55}, {0.82, 0.23, 0.65, 0.47}} }
+        }
     }
 }
 
@@ -145,6 +160,7 @@ local CharacterSets = {
 local default_character_variant = CharacterVariant.AUTOMATA
 
 local beizer_depth = 5
+local msaa_samples = 6
 
 -- vars
 
@@ -169,27 +185,30 @@ local AngelicFont_meta = {__index = AngelicFont}
 
 ---Create canvas for character and draw it into it
 ---@param character AngelicCharacter
----@private
+---@return love.ImageData
+----@private
 function AngelicFont:drawCharacter(character)
     local template = self.characterSet.characters[character]
 
-    local canvas = love.graphics.newCanvas(math.floor(template.width * self.size), self.size)
+    local canvas = love.graphics.newCanvas(math.floor(template.width * self.size), self.size, {msaa = msaa_samples})
 
     love.graphics.push("all")
     love.graphics.setCanvas(canvas)
     love.graphics.setLineWidth(self.characterSet.lineSize)
+    love.graphics.scale(self.size)
+    --love.graphics.setBlendMode("smooth")
     local circleStyle = self.characterSet.circleMode
     local circleRadius = self.characterSet.circleRadius
 
-    for _, circle in ipairs(template.circles) do
+    for _, circle in ipairs(template.circles or {}) do
         love.graphics.circle(circleStyle, circle[1], circle[2], circleRadius)
     end
 
-    for _, curve in ipairs(template.curves) do
+    for _, curve in ipairs(template.curves or {}) do
         love.graphics.line(love.math.newBezierCurve(curve):render(beizer_depth))
     end
 
-    for _, line in ipairs(template.lines) do
+    for _, line in ipairs(template.lines or {}) do
         love.graphics.line(line)
     end
 
@@ -201,7 +220,7 @@ end
 -- angelic fnc
 
 ---Create new AngelicFont object
----@param variant FontVariant
+---@param variant FontStyle
 ---@param size integer TO BE CHANGED TO PT UNITS
 ---@param noVariance boolean
 ---@return AngelicFont
@@ -212,13 +231,13 @@ function angelic.new(variant, size, noVariance)
         same = noVariance
     }
 
-    setmetatable(obj, AngelicFont_meta)
+    setmetatable(obj, AngelicFont_meta) ---@cast obj AngelicFont
 
     return obj
 end
 
 angelic.CharacterVariant = CharacterVariant -- expose character variant enum for access
 angelic.AngelicCharacter = AngelicCharacter -- expose Angelic character names enum for access
-angelic.FontVariant = FontVariant -- expose font variants enum for access
+angelic.FontStyle = FontStyle -- expose font style names enum for access
 
 return angelic
