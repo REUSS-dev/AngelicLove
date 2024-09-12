@@ -173,6 +173,8 @@ local CharacterSets = {
 local beizer_depth = 5
 local msaa_samples = 6
 
+local space_width = 15
+
 -- vars
 
 
@@ -195,6 +197,7 @@ end
 ---@field characterSet CharacterSet Designated character set
 ---@field size integer Size multiplier for characters
 ---@field same boolean If true, capital letters will use same characters as lower-case; otherwise will use alternative variants for capital letters
+---@field spaceWidth integer
 ---@field cacheDrawnCharacters table<AngelicCharacter, love.ImageData>?
 ---@field cacheImageFont love.Font
 ---@field separator love.ImageData? ImageFont separator ImageData object. Must be reset after resizing
@@ -251,9 +254,9 @@ end
 
 ---Create new ImageFont from AngelicFont data
 function AngelicFont:generateFont()
-    local glyphs = ""
+    local glyphs = " "
     local images = {}
-    local totalWidth = 0
+    local totalWidth = self.spaceWidth
 
     if not self.separator then
         self:generateSeparator()
@@ -286,8 +289,14 @@ function AngelicFont:generateFont()
         end
     end
 
-    local imagefontData = love.image.newImageData(totalWidth + 2 * #images, self.size)
+    local imagefontData = love.image.newImageData(totalWidth + 2 * (#images + 1), self.size)
     local x = 0
+
+    -- Include space
+    imagefontData:paste(self.separator, 0, 0, 0, 0, 1, self.size)
+    imagefontData:paste(self.separator, self.spaceWidth + 1, 0, 0, 0, 1, self.size)
+    x = x + self.spaceWidth + 2
+
     for _, data in ipairs(images) do
         local dataWidth = data:getWidth()
 
@@ -314,7 +323,7 @@ end
 ---Create new AngelicFont object
 ---@param style FontStyle
 ---@param size integer TO BE CHANGED TO PT UNITS
----@param noVariance boolean
+---@param noVariance boolean?
 ---@return AngelicFont
 function angelic.new(style, size, noVariance)
     local obj = {
@@ -322,7 +331,8 @@ function angelic.new(style, size, noVariance)
         style = FontStylesPresets[style],
         characterSet = CharacterSets[FontStylesPresets[style].characterVariant],
         size = size,
-        same = noVariance
+        spaceWidth = space_width,
+        same = noVariance,
     }
 
     setmetatable(obj, AngelicFont_meta) ---@cast obj AngelicFont
