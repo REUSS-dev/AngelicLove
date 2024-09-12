@@ -146,18 +146,16 @@ local FontVariant = {
 local CharacterSets = {
     [CharacterVariant.AUTOMATA] = {
         circleMode = "fill",
-        circleRadius = 0.11,
+        circleRadius = 0.09,
         lineSize = 0.08,
 
         characters = {
-            [AngelicCharacter.ALEPH] = { width = 1.05, circles = {{0.15, 0.12}, {0.15, 0.89}, {0.92, 0.12}, {0.92, 0.89}}, lines = {{0.24, 0.23, 0.81, 0.79}, {0.25, 0.78, 0.41, 0.55}, {0.82, 0.23, 0.65, 0.47}} }
+            [AngelicCharacter.ALEPH] = { width = 1.06, circles = {{0.14, 0.10}, {0.14, 0.89}, {0.91, 0.10}, {0.91, 0.89}}, lines = {{0.23, 0.22, 0.80, 0.77}, {0.23, 0.77, 0.39, 0.55}, {0.82, 0.22, 0.64, 0.45}} }
         }
     }
 }
 
 -- config
-
-local default_character_variant = CharacterVariant.AUTOMATA
 
 local beizer_depth = 5
 local msaa_samples = 6
