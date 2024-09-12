@@ -9,8 +9,9 @@ local angelic = {}
 ---@alias prototypeCurve number[]
 ---@alias prototypeLine {[1]: number, [2]: number, [3]: number, [4]: number}
 
----@alias CharacterTemplate {width: number, circles: prototypeCircle[]?, curves: prototypeCurve[][]?, lines: prototypeLine[]?}
+---@alias CharacterTemplate {width: number, circles: prototypeCircle[]?, curves: prototypeCurve[]?, lines: prototypeLine[]?}
 ---@alias CharacterSet {circleMode: love.DrawMode, circleRadius: number, lineSize: number, characters: table<AngelicCharacter, CharacterTemplate>}
+---@alias StylePreset {characterVariant: CharacterVariant, characters: table<string, AngelicCharacter|AngelicCharacter[]>}
 
 -- consts
 
@@ -54,91 +55,103 @@ local FontStyle = {
     REINCARNATION = "rein"
 }
 
----@enum FontVariant
-local FontVariant = {
+---@type table<FontStyle, StylePreset>
+local FontStylesPresets = {
     [FontStyle.REPLICANT] = {
-        ["a"] = AngelicCharacter.ALEPH,
-        ["b"] = AngelicCharacter.BETH,
-        ["c"] = AngelicCharacter.CHETH,
-        ["d"] = AngelicCharacter.DALETH,
-        ["e"] = AngelicCharacter.HE,
-        ["f"] = AngelicCharacter.ZADE,
-        ["g"] = AngelicCharacter.GIMEL,
-        ["h"] = AngelicCharacter.HE,
-        ["i"] = AngelicCharacter.JOD,
-        ["j"] = AngelicCharacter.JOD,
-        ["k"] = AngelicCharacter.CAPH,
-        ["l"] = AngelicCharacter.LAMED,
-        ["m"] = AngelicCharacter.MEM,
-        ["n"] = AngelicCharacter.NUN,
-        ["o"] = AngelicCharacter.AIN,
-        ["p"] = AngelicCharacter.PE,
-        ["q"] = AngelicCharacter.KUFF,
-        ["r"] = AngelicCharacter.RESH,
-        ["s"] = {AngelicCharacter.SAMECH, AngelicCharacter.SHIN},
-        ["t"] = {AngelicCharacter.ZAIN, AngelicCharacter.THETH},
-        ["u"] = AngelicCharacter.VAU,
-        ["v"] = AngelicCharacter.VAU,
-        ["w"] = {AngelicCharacter.RECT, AngelicCharacter.VAU},
-        ["x"] = AngelicCharacter.SHIN,
-        ["y"] = AngelicCharacter.JOD,
-        ["z"] = AngelicCharacter.ZADE,
+        characterVariant = CharacterVariant.REPLICANT,
+
+        characters = {
+            ["a"] = AngelicCharacter.ALEPH,
+            ["b"] = AngelicCharacter.BETH,
+            ["c"] = AngelicCharacter.CHETH,
+            ["d"] = AngelicCharacter.DALETH,
+            ["e"] = AngelicCharacter.HE,
+            ["f"] = AngelicCharacter.ZADE,
+            ["g"] = AngelicCharacter.GIMEL,
+            ["h"] = AngelicCharacter.HE,
+            ["i"] = AngelicCharacter.JOD,
+            ["j"] = AngelicCharacter.JOD,
+            ["k"] = AngelicCharacter.CAPH,
+            ["l"] = AngelicCharacter.LAMED,
+            ["m"] = AngelicCharacter.MEM,
+            ["n"] = AngelicCharacter.NUN,
+            ["o"] = AngelicCharacter.AIN,
+            ["p"] = AngelicCharacter.PE,
+            ["q"] = AngelicCharacter.KUFF,
+            ["r"] = AngelicCharacter.RESH,
+            ["s"] = {AngelicCharacter.SAMECH, AngelicCharacter.SHIN},
+            ["t"] = {AngelicCharacter.ZAIN, AngelicCharacter.THETH},
+            ["u"] = AngelicCharacter.VAU,
+            ["v"] = AngelicCharacter.VAU,
+            ["w"] = {AngelicCharacter.RECT, AngelicCharacter.VAU},
+            ["x"] = AngelicCharacter.SHIN,
+            ["y"] = AngelicCharacter.JOD,
+            ["z"] = AngelicCharacter.ZADE,
+        }
     },
     [FontStyle.AUTOMATA] = {
-        ["a"] = AngelicCharacter.ALEPH,
-        ["b"] = AngelicCharacter.BETH,
-        ["c"] = AngelicCharacter.CHETH,
-        ["d"] = AngelicCharacter.DALETH,
-        ["e"] = AngelicCharacter.HE,
-        ["f"] = AngelicCharacter.ZADE,
-        ["g"] = AngelicCharacter.GIMEL,
-        ["h"] = AngelicCharacter.HE,
-        ["i"] = AngelicCharacter.JOD,
-        ["j"] = AngelicCharacter.JOD,
-        ["k"] = AngelicCharacter.CAPH,
-        ["l"] = AngelicCharacter.LAMED,
-        ["m"] = AngelicCharacter.MEM,
-        ["n"] = AngelicCharacter.NUN,
-        ["o"] = AngelicCharacter.AIN,
-        ["p"] = AngelicCharacter.PE,
-        ["q"] = AngelicCharacter.KUFF,
-        ["r"] = AngelicCharacter.RESH,
-        ["s"] = AngelicCharacter.SAMECH,
-        ["t"] = AngelicCharacter.ZAIN,
-        ["u"] = AngelicCharacter.VAU,
-        ["v"] = AngelicCharacter.VAU,
-        ["w"] = AngelicCharacter.VAU,
-        ["x"] = AngelicCharacter.SHIN,
-        ["y"] = AngelicCharacter.JOD,
-        ["z"] = AngelicCharacter.ZADE,
+        characterVariant = CharacterVariant.AUTOMATA,
+
+        characters = {
+            ["a"] = AngelicCharacter.ALEPH,
+            ["b"] = AngelicCharacter.BETH,
+            ["c"] = AngelicCharacter.CHETH,
+            ["d"] = AngelicCharacter.DALETH,
+            ["e"] = AngelicCharacter.HE,
+            ["f"] = AngelicCharacter.ZADE,
+            ["g"] = AngelicCharacter.GIMEL,
+            ["h"] = AngelicCharacter.HE,
+            ["i"] = AngelicCharacter.JOD,
+            ["j"] = AngelicCharacter.JOD,
+            ["k"] = AngelicCharacter.CAPH,
+            ["l"] = AngelicCharacter.LAMED,
+            ["m"] = AngelicCharacter.MEM,
+            ["n"] = AngelicCharacter.NUN,
+            ["o"] = AngelicCharacter.AIN,
+            ["p"] = AngelicCharacter.PE,
+            ["q"] = AngelicCharacter.KUFF,
+            ["r"] = AngelicCharacter.RESH,
+            ["s"] = AngelicCharacter.SAMECH,
+            ["t"] = AngelicCharacter.ZAIN,
+            ["u"] = AngelicCharacter.VAU,
+            ["v"] = AngelicCharacter.VAU,
+            ["w"] = AngelicCharacter.VAU,
+            ["x"] = AngelicCharacter.SHIN,
+            ["y"] = AngelicCharacter.JOD,
+            ["z"] = AngelicCharacter.ZADE
+        }
     },
     [FontStyle.REINCARNATION] = {
-        ["a"] = AngelicCharacter.ALEPH,
-        ["b"] = AngelicCharacter.BETH,
-        ["c"] = AngelicCharacter.CHETH,
-        ["d"] = AngelicCharacter.DALETH,
-        ["e"] = AngelicCharacter.KUFF,
-        ["f"] = AngelicCharacter.ZADE,
-        ["g"] = AngelicCharacter.GIMEL,
-        ["h"] = AngelicCharacter.HE,
-        ["i"] = AngelicCharacter.JOD,
-        ["j"] = AngelicCharacter.JOD,
-        ["k"] = AngelicCharacter.CAPH,
-        ["l"] = AngelicCharacter.LAMED,
-        ["m"] = AngelicCharacter.MEM,
-        ["n"] = AngelicCharacter.NUN,
-        ["o"] = AngelicCharacter.AIN,
-        ["p"] = AngelicCharacter.PE,
-        ["q"] = AngelicCharacter.KUFF,
-        ["r"] = AngelicCharacter.RESH,
-        ["s"] = AngelicCharacter.SAMECH,
-        ["t"] = AngelicCharacter.ZAIN,
-        ["u"] = AngelicCharacter.VAU,
-        ["v"] = AngelicCharacter.VAU,
-        ["w"] = AngelicCharacter.SHIN,
-        ["x"] = AngelicCharacter.SHIN,
-        ["y"] = AngelicCharacter.JOD,
-        ["z"] = AngelicCharacter.ZADE,
+        characterVariant = CharacterVariant.AUTOMATA,
+
+        characters = {
+            ["a"] = AngelicCharacter.ALEPH,
+            ["b"] = AngelicCharacter.BETH,
+            ["c"] = AngelicCharacter.CHETH,
+            ["d"] = AngelicCharacter.DALETH,
+            ["e"] = AngelicCharacter.KUFF,
+            ["f"] = AngelicCharacter.ZADE,
+            ["g"] = AngelicCharacter.GIMEL,
+            ["h"] = AngelicCharacter.HE,
+            ["i"] = AngelicCharacter.JOD,
+            ["j"] = AngelicCharacter.JOD,
+            ["k"] = AngelicCharacter.CAPH,
+            ["l"] = AngelicCharacter.LAMED,
+            ["m"] = AngelicCharacter.MEM,
+            ["n"] = AngelicCharacter.NUN,
+            ["o"] = AngelicCharacter.AIN,
+            ["p"] = AngelicCharacter.PE,
+            ["q"] = AngelicCharacter.KUFF,
+            ["r"] = AngelicCharacter.RESH,
+            ["s"] = AngelicCharacter.SAMECH,
+            ["t"] = AngelicCharacter.ZAIN,
+            ["u"] = AngelicCharacter.VAU,
+            ["v"] = AngelicCharacter.VAU,
+            ["w"] = AngelicCharacter.SHIN,
+            ["x"] = AngelicCharacter.SHIN,
+            ["y"] = AngelicCharacter.JOD,
+            ["z"] = AngelicCharacter.ZADE
+        }
     }
 }
 
@@ -150,7 +163,7 @@ local CharacterSets = {
         lineSize = 0.08,
 
         characters = {
-            [AngelicCharacter.ALEPH] = { width = 1.05, circles = {{0.15, 0.12}, {0.15, 0.89}, {0.92, 0.12}, {0.92, 0.89}}, lines = {{0.24, 0.23, 0.81, 0.79}, {0.25, 0.78, 0.41, 0.55}, {0.82, 0.23, 0.65, 0.47}} }
+            [AngelicCharacter.ALEPH] = { width = 1.06, circles = {{0.14, 0.10}, {0.14, 0.89}, {0.91, 0.10}, {0.91, 0.89}}, lines = {{0.23, 0.22, 0.80, 0.77}, {0.23, 0.77, 0.39, 0.55}, {0.82, 0.22, 0.64, 0.45}} },
         }
     }
 }
@@ -172,21 +185,28 @@ local msaa_samples = 6
 
 -- fnc
 
-
+local function pixelFill()
+    return 255, 0, 0, 1
+end
 
 -- classes
 
 ---@class AngelicFont
+---@field styleName FontStyle
+---@field style StylePreset
 ---@field characterSet CharacterSet Designated character set
 ---@field size integer Size multiplier for characters
 ---@field same boolean If true, capital letters will use same characters as lower-case; otherwise will use alternative variants for capital letters
+---@field cacheDrawnCharacters table<AngelicCharacter, love.ImageData>?
+---@field cacheImageFont love.Font
+---@field separator love.ImageData? ImageFont separator ImageData object. Must be reset after resizing
 local AngelicFont = {}
 local AngelicFont_meta = {__index = AngelicFont}
 
 ---Create canvas for character and draw it into it
 ---@param character AngelicCharacter
 ---@return love.ImageData
-----@private
+---@private
 function AngelicFont:drawCharacter(character)
     local template = self.characterSet.characters[character]
 
@@ -196,7 +216,6 @@ function AngelicFont:drawCharacter(character)
     love.graphics.setCanvas(canvas)
     love.graphics.setLineWidth(self.characterSet.lineSize)
     love.graphics.scale(self.size)
-    --love.graphics.setBlendMode("smooth")
     local circleStyle = self.characterSet.circleMode
     local circleRadius = self.characterSet.circleRadius
 
@@ -217,21 +236,102 @@ function AngelicFont:drawCharacter(character)
     return canvas:newImageData()
 end
 
+function AngelicFont:generateSeparator()
+    local separator = love.image.newImageData(1, self.size)
+    separator:mapPixel(pixelFill, 0, 0, 1, self.size)
+
+    self.separator = separator
+end
+
+function AngelicFont:generateCharacters()
+    self.cacheDrawnCharacters = {}
+
+    for anChar, _ in pairs(self.characterSet.characters) do
+        self.cacheDrawnCharacters[anChar] = self:drawCharacter(anChar)
+    end
+end
+
+---Create new ImageFont from AngelicFont data
+function AngelicFont:generateFont()
+    local glyphs = ""
+    local images = {}
+    local totalWidth = 0
+
+    if not self.separator then
+        self:generateSeparator()
+    end
+
+    if not self.cacheDrawnCharacters then
+        self:generateCharacters()
+    end
+
+    for character, mappedAngelic in pairs(self.style.characters) do
+        local lower, capital
+        if type(mappedAngelic) == "string" then
+            lower, capital = mappedAngelic, mappedAngelic
+        else
+            lower, capital = mappedAngelic[1], not self.same and mappedAngelic[2] or mappedAngelic[1]
+        end
+
+        local drawnLower = self.cacheDrawnCharacters[lower]
+        if drawnLower then
+            glyphs = glyphs .. character
+            images[#images+1] = drawnLower
+            totalWidth = totalWidth + drawnLower:getWidth()
+        end
+
+        local drawnCapital = self.cacheDrawnCharacters[capital]
+        if drawnCapital then
+            glyphs = glyphs .. character:upper()
+            images[#images+1] = drawnCapital
+            totalWidth = totalWidth + drawnCapital:getWidth()
+        end
+    end
+
+    local imagefontData = love.image.newImageData(totalWidth + 2 * #images, self.size)
+    local x = 0
+    for _, data in ipairs(images) do
+        local dataWidth = data:getWidth()
+
+        imagefontData:paste(self.separator, x, 0, 0, 0, 1, self.size)
+        imagefontData:paste(data, x + 1, 0, 0, 0, dataWidth, self.size)
+        imagefontData:paste(self.separator, x + dataWidth + 1, 0, 0, 0, 1, self.size)
+        x = x + dataWidth + 2
+    end
+
+    self.cacheImageFont = love.graphics.newImageFont(imagefontData, glyphs)
+end
+
+---Get cached font or create new ImageFont if font wasn't created before or configuration changed
+function AngelicFont:getFont()
+    if not self.cacheImageFont then
+        self:generateFont()
+    end
+
+    return self.cacheImageFont
+end
+
 -- angelic fnc
 
 ---Create new AngelicFont object
----@param variant FontStyle
+---@param style FontStyle
 ---@param size integer TO BE CHANGED TO PT UNITS
 ---@param noVariance boolean
 ---@return AngelicFont
-function angelic.new(variant, size, noVariance)
+function angelic.new(style, size, noVariance)
     local obj = {
-        characterSet = CharacterSets[variant],
+        styleName = style,
+        style = FontStylesPresets[style],
+        characterSet = CharacterSets[FontStylesPresets[style].characterVariant],
         size = size,
         same = noVariance
     }
 
     setmetatable(obj, AngelicFont_meta) ---@cast obj AngelicFont
+
+    obj:generateSeparator()
+    obj:generateCharacters()
+    obj:generateFont()
 
     return obj
 end
