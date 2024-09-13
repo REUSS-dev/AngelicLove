@@ -184,6 +184,15 @@ local CharacterSets = {
             [AngelicCharacter.ZADE] = { width = 1.06, circles = {{0.14, 0.10}, {0.91, 0.10}, {0.91, 0.89}}, lines = {{0.23, 0.22, 0.80, 0.77}, {0.055, 0.895, 0.765, 0.895}, {0.82, 0.22, 0.64, 0.45}}},
             [AngelicCharacter.ZAIN] = { width = 1.06, circles = {{0.13, 0.10}, {0.92, 0.10}, {0.53, 0.89}}, lines = {{0.30, 0.10, 0.75, 0.10}, {0.53, 0.22, 0.53, 0.73}}},
         }
+    },
+    [CharacterVariant.REPLICANT] = {
+        circleMode = "line",
+        circleRadius = 0.073,
+        lineSize = 0.04,
+
+        characters = {
+            [AngelicCharacter.ALEPH] = {width = 1.06, circles = {{0.165, 0.135}, {0.145, 0.865}, {0.915, 0.13}, {0.89, 0.865}}, lines = {{0.22, 0.195, 0.835, 0.81}, {0.465, 0.44, 0.175, 0.79}, {0.87, 0.18, 0.56, 0.54}}}
+        }
     }
 }
 
