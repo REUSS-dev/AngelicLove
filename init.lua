@@ -159,7 +159,7 @@ local FontStylesPresets = {
 local CharacterSets = {
     [CharacterVariant.AUTOMATA] = {
         circleMode = "fill",
-        circleRadius = 0.11,
+        circleRadius = 0.09,
         lineSize = 0.08,
 
         characters = {
@@ -218,8 +218,6 @@ local CharacterSets = {
 }
 
 -- config
-
-local default_character_variant = CharacterVariant.AUTOMATA
 
 local beizer_depth = 5
 local msaa_samples = 6
