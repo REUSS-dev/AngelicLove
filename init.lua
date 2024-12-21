@@ -370,9 +370,9 @@ end
 -- angelic fnc
 
 ---Create new AngelicFont object
----@param style FontStyle
----@param size integer TO BE CHANGED TO PT UNITS
----@param noVariance boolean?
+---@param style FontStyle Entry from FontStyle enum
+---@param size integer Font height in pixels
+---@param noVariance boolean? Pass **true**, if no upper-case/lower-case variance between letters should take place (if font style supports it)
 ---@return AngelicFont
 function angelic.new(style, size, noVariance)
     local obj = {
