@@ -1,3 +1,4 @@
+---@diagnostic disable: invisible
 -- angelic
 local angelic = {}
 
@@ -11,7 +12,7 @@ local angelic = {}
 
 ---@alias CharacterTemplate {width: number, circles: prototypeCircle[]?, curves: prototypeCurve[]?, lines: prototypeLine[]?}
 ---@alias CharacterSet {circleMode: love.DrawMode, circleRadius: number, lineSize: number, characters: table<AngelicCharacter, CharacterTemplate>}
----@alias StylePreset {characterVariant: CharacterVariant, characters: table<string, AngelicCharacter|AngelicCharacter[]>}
+---@alias StylePreset {characterVariant: CharacterVariant, characters: table<string, AngelicCharacter|AngelicCharacter[]>, name: string?}
 
 -- consts
 
@@ -241,7 +242,7 @@ end
 -- classes
 
 ---@class AngelicFont
----@field styleName FontStyle
+---@field styleName FontStyle|string
 ---@field style StylePreset
 ---@field characterSet CharacterSet Designated character set
 ---@field size integer Size multiplier for characters
@@ -252,6 +253,8 @@ end
 ---@field separator love.ImageData? ImageFont separator ImageData object. Must be reset after resizing
 local AngelicFont = {}
 local AngelicFont_meta = {__index = AngelicFont}
+
+--#region private methods
 
 ---Create canvas for character and draw it into it
 ---@param character AngelicCharacter
@@ -286,6 +289,7 @@ function AngelicFont:drawCharacter(character)
     return canvas:newImageData()
 end
 
+---@private
 function AngelicFont:generateSeparator()
     local separator = love.image.newImageData(1, self.size)
     separator:mapPixel(pixelFill, 0, 0, 1, self.size)
@@ -293,6 +297,7 @@ function AngelicFont:generateSeparator()
     self.separator = separator
 end
 
+---@private
 function AngelicFont:generateCharacters()
     self.cacheDrawnCharacters = {}
 
@@ -302,6 +307,7 @@ function AngelicFont:generateCharacters()
 end
 
 ---Create new ImageFont from AngelicFont data
+---@private
 function AngelicFont:generateFont()
     local glyphs = " "
     local images = {}
@@ -330,11 +336,13 @@ function AngelicFont:generateFont()
             totalWidth = totalWidth + drawnLower:getWidth()
         end
 
-        local drawnCapital = self.cacheDrawnCharacters[capital]
-        if drawnCapital then
-            glyphs = glyphs .. character:upper()
-            images[#images+1] = drawnCapital
-            totalWidth = totalWidth + drawnCapital:getWidth()
+        if character:lower() ~= character:upper() then
+            local drawnCapital = self.cacheDrawnCharacters[capital]
+            if drawnCapital then
+                glyphs = glyphs .. character:upper()
+                images[#images+1] = drawnCapital
+                totalWidth = totalWidth + drawnCapital:getWidth()
+            end
         end
     end
 
@@ -358,6 +366,19 @@ function AngelicFont:generateFont()
     self.cacheImageFont = love.graphics.newImageFont(imagefontData, glyphs)
 end
 
+---@private
+function AngelicFont:dropCache(dropSeparator)
+    self.cacheDrawnCharacters, self.cacheImageFont = nil, nil
+
+    if dropSeparator then
+        self.separator = nil
+    end
+end
+
+--#endregion
+
+--#region exposed methods
+
 ---Get cached font or create new ImageFont if font wasn't created before or configuration changed
 function AngelicFont:getFont()
     if not self.cacheImageFont then
@@ -367,24 +388,66 @@ function AngelicFont:getFont()
     return self.cacheImageFont
 end
 
+---Sets size of Angelic font
+---@param size integer
+function AngelicFont:setSize(size)
+    assert(type(size) == "number", "Invalid parameter #1 to AngelicFont:setSize(size), number expected, got " .. type(size))
+
+    self.size = size
+    self:dropCache(true)
+end
+
+---Sets if upper/lower case character variance is ignored
+---@param noVariance boolean Set to **true**, if upper/lower case character variance should be disabled
+function AngelicFont:setNoVariance(noVariance)
+    self.same = noVariance
+
+    self.cacheImageFont = nil
+end
+
+---Sets style of Angelic font
+---@param style FontStyle|StylePreset Entry from FontStyle enum or self-defined style preset.
+function AngelicFont:setStyle(style)
+    if type(style) == "string" then
+        if not FontStylesPresets[style] then
+            error("Unknown Angelic font style " .. style)
+        end
+
+        self.styleName = style
+        self.style = FontStylesPresets[style]
+        self.characterSet = CharacterSets[FontStylesPresets[style].characterVariant]
+    elseif type(style) == "table" then
+        if not style.characterVariant or not style.characters then
+            error("Invalid Angelic font style. Table should contain *characterVariant* and *characters* fields.")
+        end
+
+        self.styleName = style.name or "anonymous"
+        self.style = style
+        self.characterSet = CharacterSets[style.characterVariant]
+    end
+    
+    self:dropCache()
+end
+
+--#endregion
+
 -- angelic fnc
 
 ---Create new AngelicFont object
----@param style FontStyle Entry from FontStyle enum
+---@param style FontStyle|StylePreset Entry from FontStyle enum or self-defined style preset.
 ---@param size integer Font height in pixels
 ---@param noVariance boolean? Pass **true**, if no upper-case/lower-case variance between letters should take place (if font style supports it)
 ---@return AngelicFont
 function angelic.new(style, size, noVariance)
     local obj = {
-        styleName = style,
-        style = FontStylesPresets[style],
-        characterSet = CharacterSets[FontStylesPresets[style].characterVariant],
         size = size,
         spaceWidth = space_width,
         same = noVariance,
     }
 
     setmetatable(obj, AngelicFont_meta) ---@cast obj AngelicFont
+
+    obj:setStyle(style)
 
     obj:generateSeparator()
     obj:generateCharacters()
