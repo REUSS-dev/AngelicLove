@@ -3,8 +3,8 @@ local font, fontR
 function love.load()
     local angelic = require("init")
 
-    local angelAuto = angelic.new(angelic.FontStyle.AUTOMATA, 25)
-    local angelRein = angelic.new(angelic.FontStyle.REINCARNATION, 25)
+    local angelAuto = angelic.new(angelic.FontStyle.AUTOMATA, 30)
+    local angelRein = angelic.new(angelic.FontStyle.REPLICANT, 30)
 
     font = angelAuto:getFont()
     fontR = angelRein:getFont()
@@ -18,7 +18,7 @@ function love.draw()
 
     love.graphics.setFont(love.graphics.newFont())
     love.graphics.print("Automata", 50, 30)
-    love.graphics.print("Rein", 250, 30)
+    love.graphics.print("Replicant", 250, 30)
     love.graphics.print("Lorem ipsum dolor sit amet", 50, 220)
     love.graphics.print("LoremIpsumDolorSitAmet", 50, 300)
 
@@ -31,4 +31,7 @@ function love.draw()
 
     love.graphics.setFont(fontR)
     love.graphics.print("abcde\nfghij\nklmno\npqrst\nuvwxyz", 250, 50)
+
+    love.graphics.print("Lorem ipsum dolor sit amet", 50, 400)
+    love.graphics.print("LoremIpsumDolorSitAmet", 50, 470)
 end
