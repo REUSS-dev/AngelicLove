@@ -1,6 +1,6 @@
 # AngelicLove
 AngelicLove - is a set of vectorized self-constructing Angelic language image-fonts for Love2D.  
-This project is inspired by NieR game series by Yoko Taro (at Square Enix) and mimics font variants presented in the games.  
+This project is inspired with NieR game series by Yoko Taro (at Square Enix) and mimics font variants presented in the games.  
 You do not need to download anything external or store any files excpet the module itself for this library to work. All fonts are drawn and generated internally.
 
 ![image](https://github.com/user-attachments/assets/8b85bc53-b6be-41d5-b9e6-4850d524e809)
